@@ -4,7 +4,12 @@
 using namespace std;
 
 
-//function returning range in string including indexes
+// priority of signs from high to low. 
+// Having * and /, + and - be the same priority won't change anything
+char sign_priority[5] = { '^', '*', '/' , '+', '-' };
+
+
+// function returning range in string including indexes
 string range(string s, int first_i, int last_i) {
     string result;
     for (int i = first_i; i < last_i; i++) {
@@ -119,7 +124,7 @@ string calculation_operate(string s) {
 }
 
 
-//returns a section in a string with another string
+// returns a section in a string with another string
 string insert(string original, string passage, int first_i, int last_i) {
     string first_half = range(original, 0, first_i);
     string second_half = range(original, last_i + 1, original.length());
@@ -153,71 +158,46 @@ float calculate(string s) {
         }
     }
 
-    // for loop for detecting * /
-    for (int char_i = 0; char_i <= s.length(); char_i++) {
-        char current_char = s[char_i];
+    // for loop for detecting signs
+    for (int sign_i = 0; sign_i < size(sign_priority); sign_i++) {
 
-        // finding x*y and pasting their results instead of them n+x*y; x*y=t; n+t
-        if (current_char == '*' || current_char == '/' || current_char == '^') {
+        char current_sign = sign_priority[sign_i];
 
-            int start_index = char_i - 1; // +1 and -1 to avoid catching current_char
-            int end_index = char_i + 1;
-            // finding the beginning of *, ^ or /
-            for (start_index; start_index >= 0; start_index--) {
-                char start_char = s[start_index];
-                if (is_sign(start_char)) {
-                    break;
+        for (int char_i = 0; char_i <= s.length(); char_i++) {
+            char current_char = s[char_i];
+
+            // finding x*y and pasting their results instead of n+x*y, x*y=t => n+t
+            if (current_char == current_sign) {
+
+                int start_index = char_i - 1; // +1 and -1 to avoid catching current_char == current sign
+                int end_index = char_i + 1;
+                // finding the beginning of sign
+                for (start_index; start_index >= 0; start_index--) {
+                    char start_char = s[start_index];
+                    if (is_sign(start_char)) {
+                        break;
+                    }
                 }
-            }
 
-            // finding the ending of *, ^ or /
-            for (end_index; end_index <= s.length() - 1; end_index++) {
-                char end_char = s[end_index];
-                if (is_sign(end_char)) {
-                    end_index -= 1;
-                    break;
+                // finding the ending of *, ^ or /
+                for (end_index; end_index <= s.length() - 1; end_index++) {
+                    char end_char = s[end_index];
+                    if (is_sign(end_char)) {
+                        end_index -= 1;
+                        break;
+                    }
                 }
-            }
 
-            // replacing with result; if 5*4=20, 20 is result
-            s = insert(s, calculation_operate(range(s, start_index + 1, end_index + 1)),
-                start_index + 1, end_index);
-            char_i = 0;
+                // replacing segment between (start_index+1, end_index+1) for example '5 +3', with 
+                // calculated answer, for example '8'
+                s = insert(s, calculation_operate(range(s, start_index + 1, end_index + 1)),
+                    start_index + 1, end_index);
+                // resetting the loop to spot repeating signs
+                char_i = 0;
+            }
         }
     }
 
-    // for loop for detecting + -
-    for (int char_i = 0; char_i <= s.length(); char_i++) {
-        char current_char = s[char_i];
-
-        if (current_char == '+' || current_char == '-') {
-
-            int start_index = char_i - 1; // +1 and -1 to avoid catching current_char
-            int end_index = char_i + 1;
-
-            // finding the beginning of + or -
-            for (start_index; start_index >= 0; start_index--) {
-                char start_char = s[start_index];
-                if (is_sign(start_char)) {
-                    break;
-                }
-            }
-
-            // finding the ending of * or /
-            for (end_index; end_index <= s.length() - 1; end_index++) {
-                char end_char = s[end_index];
-                if (is_sign(end_char)) {
-                    end_index -= 1;
-                    break;
-                }
-            }
-
-            // replacing with result; if 5*4=20, 20 is result
-            s = insert(s, calculation_operate(range(s, start_index + 1, end_index + 1)),
-                start_index + 1, end_index);
-            char_i = 0;
-        }
-    }
     return stof(s);
 }
 
