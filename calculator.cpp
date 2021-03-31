@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <string>
 using namespace std;
@@ -140,7 +141,6 @@ float calculate(string s) {
         if (current_char == '(') {
             int search_index;
             for (search_index = s.length() - 1; search_index > char_i; search_index--) {
-                cout << search_index;
                 if (s[search_index] == ')') {
                     break;
                 }
@@ -148,7 +148,6 @@ float calculate(string s) {
                     
             s = insert(s, to_string(calculate(range(s, char_i + 1, search_index))),
                 char_i + 1, search_index); 
-            cout << "brackets: " << s << endl;
             char_i = 0;
             break;
         }
@@ -183,7 +182,6 @@ float calculate(string s) {
             // replacing with result; if 5*4=20, 20 is result
             s = insert(s, calculation_operate(range(s, start_index + 1, end_index + 1)),
                 start_index + 1, end_index);
-            cout << "multi: " << s << endl;
             char_i = 0;
         }
     }
@@ -217,7 +215,6 @@ float calculate(string s) {
             // replacing with result; if 5*4=20, 20 is result
             s = insert(s, calculation_operate(range(s, start_index + 1, end_index + 1)),
                 start_index + 1, end_index);
-            cout << "plus: " << s << endl;
             char_i = 0;
         }
     }
